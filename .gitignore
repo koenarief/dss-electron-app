@@ -1,0 +1,6 @@
+.env
+node_modules/
+default.realm
+default.realm.lock
+mongodb-realm/
+
