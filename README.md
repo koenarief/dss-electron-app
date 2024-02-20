@@ -7,7 +7,6 @@
 - npm install
 - npm run build
 - hasil build ada di folder dist
-- run webserver static file: PORT=5173 serve -s dist
 
 ## Build electron app
 
@@ -17,6 +16,8 @@
 - npm run dist
 - hasil build ada di folder dist
 - buat file .env yg berisi: APPID, DBUSER, DBPASS, DEBUG
-- run app: npm run start
+- copy semua file dari folder dss-react-app/dist ke folder <app>/resources/build
+- edit file index.html, ubah /assets jadi ./assets
+- run app: DEBUG=false ./my-electron-app
 
 
