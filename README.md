@@ -16,7 +16,7 @@
 - npm install
 - npm run dist
 - hasil build ada di folder dist
-- buat file .env yg berisi: APPID, DBUSER, DBPASS
+- buat file .env yg berisi: APPID, DBUSER, DBPASS, DEBUG
 - run app: npm run start
 
 
