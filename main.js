@@ -13,19 +13,31 @@ let mainWindow
 
 let realm
 
-const ProductSchema = {
+const productsSchema = {
     name: 'products',
     properties: {
         _id: 'objectId',
-        image: 'string',
-        title: 'string',
         description: 'string',
-        stock: 'int',
+        image: 'string',
         price: 'int',
         rating: 'int',
+        stock: 'int',
+        title: 'string',
+        owner_id: 'string',
     },
     primaryKey: '_id',
-}
+};
+
+const ItemSchema = {
+    name: 'Item',
+    properties: {
+        _id: 'objectId',
+        isComplete: 'bool',
+        owner_id: 'string',
+        summary: 'string',
+    },
+    primaryKey: '_id',
+};
 
 async function openRealm() {
     if (realm && !realm.isClosed) {
@@ -34,16 +46,24 @@ async function openRealm() {
 
     await appRealm.logIn(Realm.Credentials.emailPassword(process.env.DBUSER, process.env.DBPASS))
 
+    console.log(appRealm.currentUser.id)
+
     realm = await Realm.open({
-        schema: [ProductSchema],
-        deleteRealmIfMigrationNeeded: true,
-        /**
+        schema: [productsSchema, ItemSchema],
+        // deleteRealmIfMigrationNeeded: true,
         sync: {
-          user: app.currentUser,
-          flexible: true,
+            user: appRealm.currentUser,
+            flexible: true,
         },
-        **/
     })
+
+    await realm
+        .objects("Item")
+        .subscribe({ name: "All Item" });
+
+    await realm
+        .objects("products")
+        .subscribe({ name: "All products" });
 
     return realm
 }
@@ -56,8 +76,9 @@ async function productList() {
 async function productCreate(args) {
     await openRealm()
     realm.write(() => {
-        realm.create('products', {
+        realm.create("products", {
             ...args,
+            owner_id: appRealm.currentUser.id,
             _id: bson.ObjectID(),
         })
     })
