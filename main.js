@@ -28,18 +28,25 @@ const productsSchema = {
     primaryKey: '_id',
 };
 
-const ItemSchema = {
-    name: 'Item',
-    properties: {
-        _id: 'objectId',
-        isComplete: 'bool',
-        owner_id: 'string',
-        summary: 'string',
-    },
-    primaryKey: '_id',
-};
+async function openLocalRealm() {
+    if (realm && !realm.isClosed) {
+        return realm
+    }
+    await appRealm.logIn(Realm.Credentials.anonymous())
+    realm = await Realm.open({
+        schema: [productsSchema],
+        deleteRealmIfMigrationNeeded: true,
+    })
+
+    return realm
+}
 
 async function openRealm() {
+
+    if (process.env.LOCAL == 'true') {
+	return openLocalRealm()
+    }
+
     if (realm && !realm.isClosed) {
         return realm
     }
@@ -49,17 +56,13 @@ async function openRealm() {
     console.log(appRealm.currentUser.id)
 
     realm = await Realm.open({
-        schema: [productsSchema, ItemSchema],
+        schema: [productsSchema],
         // deleteRealmIfMigrationNeeded: true,
         sync: {
             user: appRealm.currentUser,
             flexible: true,
         },
     })
-
-    await realm
-        .objects("Item")
-        .subscribe({ name: "All Item" });
 
     await realm
         .objects("products")
